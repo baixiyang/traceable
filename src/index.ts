@@ -45,6 +45,7 @@ export class Traceable<T extends Target = Target> {
       }
     }
     this.correctTarget(mutationGroup);
+    this.currentMutationGroup = undefined;
     this.pointer++;
   }
   backward() {
@@ -60,6 +61,7 @@ export class Traceable<T extends Target = Target> {
       }
     }
     this.correctTarget(mutationGroup);
+    this.currentMutationGroup = undefined;
     this.pointer--;
   }
   get canForward() {
@@ -119,6 +121,7 @@ export class Traceable<T extends Target = Target> {
         if (p === VUE_READONLY) {
           return true;
         }
+        // todo fix vue3:RangeError: Maximum call stack size exceeded
         const res = Reflect.get(target, p, receiver);
         if (isObject(res)) {
           return this.toTraceable(res as T);
@@ -167,7 +170,13 @@ export class Traceable<T extends Target = Target> {
     this.limit = limit;
     const targetType = getTargetType(target);
     if (targetType === TargetType.INVALID) {
-      throw new Error('Traceable target invalid!');
+      throw new Error('Traceable target: invalid!');
+    }
+    // todo supported collection object
+    if (targetType === TargetType.COLLECTION) {
+      throw new Error(
+        'Traceable target: collection object is temporarily not supported'
+      );
     }
     this.data = this.toTraceable(target);
   }
