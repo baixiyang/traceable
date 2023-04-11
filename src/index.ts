@@ -2,7 +2,7 @@ import { Target, TargetType } from './type';
 import { getTargetType, isObject } from './utils';
 const ABSENT = Symbol();
 const VUE_READONLY = '__v_isReadonly';
-
+const RAW = '__v_raw'
 interface Mutation<T = Target> {
   target: T;
   p: string | symbol;
@@ -122,6 +122,9 @@ export class Traceable<T extends Target = Target> {
           return true;
         }
         // todo fix vue3:RangeError: Maximum call stack size exceeded
+        if(p === RAW) {
+          receiver = target;
+        }
         const res = Reflect.get(target, p, receiver);
         if (isObject(res)) {
           return this.toTraceable(res as T);
