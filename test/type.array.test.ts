@@ -7,6 +7,7 @@ const testFn = async (reactive: <T>(t: T) => T = (t) => t) => {
   const traceable = new Traceable<any>(
     reactive({ array: [1, 2, 3, 4, 5, 6, 7] })
   );
+  console.log("原始数据", JSON.stringify(traceable.data))
   traceable.data.array.splice(2, 4);
   traceable.data.array.push('push');
   traceable.data.array.push('push');
@@ -15,13 +16,14 @@ const testFn = async (reactive: <T>(t: T) => T = (t) => t) => {
   traceable.data.array.pop();
   traceable.data.array.shift();
   traceable.data.array.reverse();
-
+  console.log("操作后的数据", JSON.stringify(traceable.data))
   expect(JSON.stringify(traceable.data.array)).eq(
     JSON.stringify(['push', 7, 2, 1, 'unshift'])
   );
   expect(traceable.data.array.length).eq(5);
   await wait();
   traceable.backward();
+  console.log("回退后数据", JSON.stringify(traceable.data))
   expect(JSON.stringify(traceable.data.array)).eq(
     JSON.stringify([1, 2, 3, 4, 5, 6, 7])
   );
